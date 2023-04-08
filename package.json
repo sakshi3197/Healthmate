@@ -1,11 +1,12 @@
 {
-  "name": "adt_ravadap_duanim_pioneers",
+  "name": "se_project_team_04",
   "version": "1.0.0",
-  "description": "ADT Project Team Pioneers",
+  "description": "Healthmate",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js"
+    "start": "node server.js",
+    "build": "npm i"
   },
   "author": "",
   "license": "ISC",
