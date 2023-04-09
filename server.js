@@ -306,7 +306,7 @@ app.post('/api/login', async (req, res) => {
 
 
 
-// Start the server
-// app.listen(port, () => {
-//   console.log(`Server listening on port ${port}`);
-// });
+//Start the server
+app.listen(5001, () => {
+  console.log(`Server listening on port`);
+});
