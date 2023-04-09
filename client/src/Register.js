@@ -39,7 +39,9 @@ function Register() {
       const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-          await axios.post('http://localhost:5001/api/register', formValues);
+         // await axios.post('http://localhost:5001/api/register', formValues);
+          await axios.post('https://healthmate-backend.onrender.com/api/register', formValues);
+
           alert('User registered successfully.');
           navigate('/Login'); // Navigate to the homepage after successful registration
         }catch (error) {
@@ -147,7 +149,9 @@ function Register() {
         <br></br>
         ------------------OR------------------
         <br></br>
-        <a href="http://localhost:5001/api/auth/google" >Sign in with Google</a>
+        {/* <a href="http://localhost:5001/api/auth/google" >Sign in with Google</a> */}
+        <a href="https://healthmate-backend.onrender.com/api/auth/google" >Sign in with Google</a>
+
 
       </form>
       

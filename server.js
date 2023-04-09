@@ -108,7 +108,11 @@ app.get('/api/auth/google/callback',
     // alert("Authentication successful.Redirecting! Please wait!")
     // Successful authentication, redirect home.
     // res.send("Authentication Successful");
-    res.redirect('http://localhost:3000');
+
+
+    //    res.redirect('http://localhost:3000');
+    res.redirect('https://healthmate-frontend.onrender.com');
+    
     
   }
 );
@@ -298,10 +302,6 @@ app.post('/api/login', async (req, res) => {
     await mongoClient.close();
   }
 });
-
-
-
-
 
 
 

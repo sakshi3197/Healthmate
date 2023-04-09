@@ -5,7 +5,9 @@ const Posts = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const fetchPosts = async (query = '') => {
         try {
-          const response = await fetch(`http://localhost:5001/api/posts${query}`);
+          
+          //const response = await fetch(`http://localhost:5001/api/posts${query}`);
+          const response = await fetch(`https://healthmate-backend.onrender.com/api/posts${query}`);
       
           if (!response.ok) {
             throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
