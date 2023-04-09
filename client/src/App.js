@@ -10,10 +10,16 @@ function HomePage() {
   const projectsRef = useRef(null);
   const contactRef = useRef(null);
 
-  const handleNavigation = (ref) => {
-    ref.current.scrollIntoView({ behavior: "smooth" });
-  };
+  // const handleNavigation = (ref) => {
+  //   ref.current.scrollIntoView({ behavior: "smooth" });
+  // };
 
+  const handleNavigation = (ref) => {
+    if (ref && ref.current) {
+      ref.current.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+  
   return (
     <div className="app">
       <header className="header">
