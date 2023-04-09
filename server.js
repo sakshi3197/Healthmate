@@ -12,7 +12,7 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const { MongoClient, ObjectId } = require('mongodb');
 const path = require('path');
 
-const port = 5001;
+//const port = 5001;
 const mongoUri = 'mongodb+srv://vikkolla:51owp5epaYDgv04K@healthmate.uikhmuk.mongodb.net/healthmate?retryWrites=true&w=majority';
 process.env.MONGO_URI = mongoUri;
 const mongoClient = new MongoClient(process.env.MONGO_URI, { useUnifiedTopology: true });
