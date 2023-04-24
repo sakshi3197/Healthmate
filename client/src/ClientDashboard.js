@@ -14,7 +14,7 @@
 //     const userId = localStorage.getItem('id');
 //     const token = localStorage.getItem('token');
 
-//     fetch(`http://localhost:5001/api/users/${userType}/${userId}`, {
+//     fetch(`https://healthmate-backend.onrender.com/api/users/${userType}/${userId}`, {
 //       headers: {
 //         'Authorization': `Bearer ${token}`,
 //       },
@@ -117,7 +117,7 @@
 
 //     const fetchUserDetails = async () => {
 //       try {
-//         const response = await fetch(`http://localhost:5001/api/users/${userType}/${userId}`, {
+//         const response = await fetch(`https://healthmate-backend.onrender.com/api/users/${userType}/${userId}`, {
 //           headers: {
 //             'Authorization': `Bearer ${token}`,
 //           },
@@ -130,7 +130,7 @@
 //         const userData = await response.json();
 //         setUser(userData);
     
-//         const recommendationsResponse = await fetch(`http://localhost:5001/api/users/${userId}/recommendations`, {
+//         const recommendationsResponse = await fetch(`https://healthmate-backend.onrender.com/api/users/${userId}/recommendations`, {
 //           headers: {
 //             'Authorization': `Bearer ${token}`,
 //           },
@@ -150,7 +150,7 @@
 
 //     // const fetchUserDetails = async () => {
 //     //   try {
-//     //     const response = await fetch(`http://localhost:5001/api/users/${userType}/${userId}`, {
+//     //     const response = await fetch(`https://healthmate-backend.onrender.com/api/users/${userType}/${userId}`, {
 //     //       headers: {
 //     //         'Authorization': `Bearer ${token}`,
 //     //       },
@@ -163,7 +163,7 @@
 //     //     const userData = await response.json();
 //     //     setUser(userData);
 
-//     //     const postsResponse = await fetch('http://localhost:5001/api/posts', {
+//     //     const postsResponse = await fetch('https://healthmate-backend.onrender.com/api/posts', {
 //     //       headers: {
 //     //         'Authorization': `Bearer ${token}`,
 //     //       },
@@ -291,7 +291,7 @@ const ClientDashboard = () => {
     const fetchUserDetailsAndRecommendations = async () => {
       try {
         console.log("user Id for recommendations", userId);
-        const response = await fetch(`http://localhost:5001/api/users/${userType}/${userId}`, {
+        const response = await fetch(`https://healthmate-backend.onrender.com/api/users/${userType}/${userId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -304,7 +304,7 @@ const ClientDashboard = () => {
         const userData = await response.json();
         setUser(userData);
         console.log("User data", userData);
-        const recommendationsResponse = await fetch(`http://localhost:5001/api/users/${userId}/recommendations`, {
+        const recommendationsResponse = await fetch(`https://healthmate-backend.onrender.com/api/users/${userId}/recommendations`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },

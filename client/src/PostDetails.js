@@ -18,7 +18,7 @@ const PostDetails = () => {
   useEffect(() => {
     const fetchPost = async () => {
       try {
-        const response = await axios.get(`http://localhost:5001/api/posts/${id}`,{
+        const response = await axios.get(`https://healthmate-backend.onrender.com/api/posts/${id}`,{
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -44,14 +44,14 @@ const PostDetails = () => {
 
 
     try {
-      const response = await axios.get(`http://localhost:5001/api/users/${userId}`, {
+      const response = await axios.get(`https://healthmate-backend.onrender.com/api/users/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
       });
       const { firstName, lastName, email } = response.data;
       const fullName=firstName+lastName
-        await axios.post(`http://localhost:5001/api/posts/${id}/reviews`, {
+        await axios.post(`https://healthmate-backend.onrender.com/api/posts/${id}/reviews`, {
           userId,
           userType,
           rating,

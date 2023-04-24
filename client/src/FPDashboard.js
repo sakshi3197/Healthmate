@@ -12,7 +12,7 @@ const FPDashboard = () => {
     const userId = localStorage.getItem('id');
     const token = localStorage.getItem('token');
 
-    fetch(`http://localhost:5001/api/users/${userType}/${userId}`, {
+    fetch(`https://healthmate-backend.onrender.com/api/users/${userType}/${userId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },

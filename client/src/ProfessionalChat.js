@@ -16,7 +16,7 @@
 
 //   const fetchUsers = async () => {
 //     try {
-//       const response = await axios.get(`http://localhost:5001/api/professional/chat/users/${professionalId}`, {
+//       const response = await axios.get(`https://healthmate-backend.onrender.com/api/professional/chat/users/${professionalId}`, {
 //         headers: {
 //           'Authorization': `Bearer ${token}`,
 //         },
@@ -82,7 +82,7 @@ const ProfessionalChat = () => {
 
   const fetchProfessionalEmail = async () => {
     try {
-      const response = await axios.get(`http://localhost:5001/api/users/${professionalId}`, {
+      const response = await axios.get(`https://healthmate-backend.onrender.com/api/users/${professionalId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -96,7 +96,7 @@ const ProfessionalChat = () => {
   const fetchUsers = async () => {
     if (professionalEmail) {
       try {
-        const response = await axios.get(`http://localhost:5001/api/professional/chat/users/${professionalEmail}`, {
+        const response = await axios.get(`https://healthmate-backend.onrender.com/api/professional/chat/users/${professionalEmail}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },

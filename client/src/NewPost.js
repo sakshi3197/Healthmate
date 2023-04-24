@@ -15,7 +15,7 @@ const NewPost = ({ location }) => {
     const userId = localStorage.getItem('id');
     const token = localStorage.getItem('token');
     setToken(token)
-    fetch(`http://localhost:5001/api/users/${userType}/${userId}`, {
+    fetch(`https://healthmate-backend.onrender.com/api/users/${userType}/${userId}`, {
         headers: {
        
         'Authorization': `Bearer ${token}`,
@@ -39,7 +39,7 @@ const NewPost = ({ location }) => {
     e.preventDefault();
   
     try {
-      const response = await fetch('http://localhost:5001/api/newpost', {
+      const response = await fetch('https://healthmate-backend.onrender.com/api/newpost', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
