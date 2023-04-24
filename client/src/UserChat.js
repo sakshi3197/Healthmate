@@ -15,7 +15,7 @@ const UserChat = ({ userEmail, professionalId, professionalEmail }) => {
     if (userEmail && professionalEmail) {
       try {
         const response = await axios.get(
-          `http://localhost:5001/api/chat/${userEmail}/${professionalEmail}`,
+          `https://healthmate-backend.onrender.com/api/chat/${userEmail}/${professionalEmail}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -38,7 +38,7 @@ const UserChat = ({ userEmail, professionalId, professionalEmail }) => {
     };
 
     try {
-      const response = await axios.post('http://localhost:5001/api/chat', message, {
+      const response = await axios.post('https://healthmate-backend.onrender.com/api/chat', message, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,

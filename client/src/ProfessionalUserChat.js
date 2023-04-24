@@ -14,7 +14,7 @@
 //   const fetchMessages = async () => {
 //     if (userEmail && professionalEmail) {
 //       try {
-//         const response = await axios.get(`http://localhost:5001/api/professional/chat/${professionalEmail}/${userEmail}`, {
+//         const response = await axios.get(`https://healthmate-backend.onrender.com/api/professional/chat/${professionalEmail}/${userEmail}`, {
 
 //             headers: {
 //               'Authorization': `Bearer ${token}`,
@@ -37,7 +37,7 @@
 //     };
 
 //     try {
-//       const response = await axios.post('http://localhost:5001/api/chat', message, {
+//       const response = await axios.post('https://healthmate-backend.onrender.com/api/chat', message, {
 //         headers: {
 //           'Content-Type': 'application/json',
 //           'Authorization': `Bearer ${token}`,
@@ -107,7 +107,7 @@ const ProfessionalUserChat = ({ userEmail, professionalEmail }) => {
   const fetchMessages = async () => {
     if (userEmail && professionalEmail) {
       try {
-        const response = await axios.get(`http://localhost:5001/api/professional/chat/${professionalEmail}/${userEmail}`, {
+        const response = await axios.get(`https://healthmate-backend.onrender.com/api/professional/chat/${professionalEmail}/${userEmail}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -128,7 +128,7 @@ const ProfessionalUserChat = ({ userEmail, professionalEmail }) => {
     };
 
     try {
-      const response = await axios.post('http://localhost:5001/api/chat', message, {
+      const response = await axios.post('https://healthmate-backend.onrender.com/api/chat', message, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
@@ -211,7 +211,7 @@ export default ProfessionalUserChat;
 //   const fetchMessages = async () => {
 //     if (userEmail && professionalEmail) {
 //       try {
-//         const response = await axios.get(`http://localhost:5001/api/professional/chat/${professionalEmail}/${userEmail}`, {
+//         const response = await axios.get(`https://healthmate-backend.onrender.com/api/professional/chat/${professionalEmail}/${userEmail}`, {
 //           headers: {
 //             'Authorization': `Bearer ${token}`,
 //           },
@@ -225,7 +225,7 @@ export default ProfessionalUserChat;
 
 //   const fetchFitnessProfessionals = async () => {
 //     try {
-//       const response = await axios.get('http://localhost:5001/api/fitnessProfessionals', {
+//       const response = await axios.get('https://healthmate-backend.onrender.com/api/fitnessProfessionals', {
 //         headers: {
 //           'Authorization': `Bearer ${token}`,
 //         },
@@ -245,7 +245,7 @@ export default ProfessionalUserChat;
 //     };
 
 //     try {
-//       const response = await axios.post('http://localhost:5001/api/chat', message, {
+//       const response = await axios.post('https://healthmate-backend.onrender.com/api/chat', message, {
 //         headers: {
 //           'Content-Type': 'application/json',
 //           'Authorization': `Bearer ${token}`,

@@ -23,7 +23,7 @@ const ForgotPassword = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = axios.post('http://localhost:5001/api/checkValidEmail', formData);
+            const response = axios.post('https://healthmate-backend.onrender.com/api/checkValidEmail', formData);
             console.log(response.data);
             alert('Email address verified ! OTP sent on the registered email address.');
             navigate('/VerifyOTP');

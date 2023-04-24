@@ -33,7 +33,7 @@ const AdminDashboard = () => {
 
     const fetchPosts = async (query = '') => {
         try {
-            const response = await fetch(`http://localhost:5001/api/posts_admin/${query}`, {
+            const response = await fetch(`https://healthmate-backend.onrender.com/api/posts_admin/${query}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -51,7 +51,7 @@ const AdminDashboard = () => {
     };
 
     function approvePost(postId) {
-        axios.put(`http://localhost:5001/api/posts_approve/${postId}`, { status: "approved" },{
+        axios.put(`https://healthmate-backend.onrender.com/api/posts_approve/${postId}`, { status: "approved" },{
             headers: {
                 'Authorization': `Bearer ${token}`,
             },
@@ -71,7 +71,7 @@ window.location.reload();
     }
 
     function rejectPost(postId) {
-        axios.put(`http://localhost:5001/api/posts_reject/${postId}`, { status: "rejected" },{
+        axios.put(`https://healthmate-backend.onrender.com/api/posts_reject/${postId}`, { status: "rejected" },{
             headers: {
                 'Authorization': `Bearer ${token}`,
             },})

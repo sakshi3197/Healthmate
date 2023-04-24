@@ -17,7 +17,7 @@ const Profile = () => {
     const userId = localStorage.getItem('id');
     const token = localStorage.getItem('token');
 
-    fetch(`http://localhost:5001/api/users/${userType}/${userId}`, {
+    fetch(`https://healthmate-backend.onrender.com/api/users/${userType}/${userId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -55,7 +55,7 @@ const Profile = () => {
   const handleSaveChanges = (event) => {
     event.preventDefault();
     try {
-      axios.post('http://localhost:5001/api/updateProfile', user);
+      axios.post('https://healthmate-backend.onrender.com/api/updateProfile', user);
       alert('Details Updated Successfully.');
       navigate('/ClientDashboard');
     } catch (error) {

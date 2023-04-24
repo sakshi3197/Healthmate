@@ -18,7 +18,7 @@ const FpList = () => {
     setIsLoading(true);
     const source = axios.CancelToken.source();
     try {
-      const userResponse = await axios.get(`http://localhost:5001/api/users/${userId}`, {
+      const userResponse = await axios.get(`https://healthmate-backend.onrender.com/api/users/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -26,7 +26,7 @@ const FpList = () => {
       });
       setUser(userResponse.data);
 
-      const fpListResponse = await axios.get('http://localhost:5001/api/fp_list', {
+      const fpListResponse = await axios.get('https://healthmate-backend.onrender.com/api/fp_list', {
         cancelToken: source.token,
       });
       setProfessionals(fpListResponse.data);
@@ -54,7 +54,7 @@ const FpList = () => {
   const subscribeToProfessional = async (professionalId) => {
     setIsLoading(true);
     try {
-      const response = await axios.post(`http://localhost:5001/api/subscribe/${professionalId}`,
+      const response = await axios.post(`https://healthmate-backend.onrender.com/api/subscribe/${professionalId}`,
         { userId },
         {
           headers: {
@@ -94,7 +94,7 @@ const FpList = () => {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        `http://localhost:5001/api/unsubscribe/${professionalId}`,
+        `https://healthmate-backend.onrender.com/api/unsubscribe/${professionalId}`,
         { userId },
         {
           headers: {

@@ -22,7 +22,7 @@ const VerifyOTP = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = axios.post('http://localhost:5001/api/verifyOTP', formData);
+            const response = axios.post('https://healthmate-backend.onrender.com/api/verifyOTP', formData);
             console.log(response.data);
             alert('OTP Verified Successfully');
             navigate('/ResetPassword');

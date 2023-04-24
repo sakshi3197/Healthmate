@@ -18,7 +18,7 @@ const Chat = ({ userEmail, professionalId, professionalEmail }) => {
   useEffect(() => {
     const fetchSenderEmail = async () => {
       try {
-        const response = await axios.get(`http://localhost:5001/api/users/${userId}`, {
+        const response = await axios.get(`https://healthmate-backend.onrender.com/api/users/${userId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -43,7 +43,7 @@ const Chat = ({ userEmail, professionalId, professionalEmail }) => {
     if (userEmail && professionalEmail) {
       try {
         const response = await axios.get(
-          `http://localhost:5001/api/chat/${userEmail}/${professionalEmail}`,
+          `https://healthmate-backend.onrender.com/api/chat/${userEmail}/${professionalEmail}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -71,7 +71,7 @@ const Chat = ({ userEmail, professionalId, professionalEmail }) => {
 
     // Send the message to the server and save it in the database
     try {
-      const response = await axios.post('http://localhost:5001/api/chat', message, {
+      const response = await axios.post('https://healthmate-backend.onrender.com/api/chat', message, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,

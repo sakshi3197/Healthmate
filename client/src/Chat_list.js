@@ -22,7 +22,7 @@ const ChatList = () => {
   useEffect(() => {
     const fetchUserEmail = async () => {
       try {
-        const response = await axios.get(`http://localhost:5001/api/users/${userId}`, {
+        const response = await axios.get(`https://healthmate-backend.onrender.com/api/users/${userId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -41,7 +41,7 @@ const ChatList = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/api/fp_list', {
+        const response = await axios.get('https://healthmate-backend.onrender.com/api/fp_list', {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
