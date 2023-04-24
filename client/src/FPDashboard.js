@@ -12,7 +12,7 @@ const FPDashboard = () => {
     const userId = localStorage.getItem('id');
     const token = localStorage.getItem('token');
 
-    fetch(`https://healthmate-backend.onrender.com/api/users/${userType}/${userId}`, {
+    fetch(`http://localhost:5001/api/users/${userType}/${userId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -46,14 +46,9 @@ const FPDashboard = () => {
         <nav>
           <ul className="nav-list">
           <li>
-              <button className="nav-button" onClick={handleLogout}>
-                Logout
-              </button>
-          </li>
-          <li>
             <Link to="/ProfessionalChat">
               <button className="nav-button" >
-                Chats
+                Chat
               </button>
               </Link>
           </li>
@@ -72,11 +67,18 @@ const FPDashboard = () => {
             </Link>
           </li>
           <li>
+          <Link to="/Profile">
               <button className="nav-button" >
                 Profile
               </button>
+              </Link>
           </li>
-    
+          <li>
+              <button className="nav-button" onClick={handleLogout}>
+                Logout
+              </button>
+          </li>
+
           </ul>
         </nav>
       </header>
@@ -86,7 +88,6 @@ const FPDashboard = () => {
       <br></br>
       <br></br>
       <div className="fp-dashboard-content">
-            <h1>This is fitness professional dashboard page</h1>
           <h1>Welcome, {user.firstName} {user.lastName}!</h1>
           {/* <p>Email: {user.email}</p>
           <p>User Type: {user.type}</p> */}

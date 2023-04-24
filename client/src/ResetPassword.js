@@ -37,7 +37,7 @@ const ResetPassword = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            const response = axios.post('https://healthmate-backend.onrender.com/api/resetPassword', formData);
+            const response = axios.post('http://localhost:5001/api/resetPassword', formData);
             console.log(response.data);
             alert('Password has been reset successfully !');
             navigate('/Login');

@@ -27,30 +27,6 @@ const session = require('express-session');
 
 
 
-// async function connectToDb() {
-//   try {
-//     await mongoClient.connect();
-//     console.log('Connected to MongoDB');
-//   } catch (error) {
-//     console.error('Error connecting to MongoDB:', error);
-//     process.exit(1);
-//   }
-// }
-
-// async function closeDbConnection() {
-//   try {
-//     await mongoClient.close();
-//     console.log('Closed MongoDB connection');
-//   } catch (error) {
-//     console.error('Error closing MongoDB connection:', error);
-//   }
-// }
-
-// connectToDb();
-// process.on('SIGINT', closeDbConnection);
-// process.on('SIGTERM', closeDbConnection);
-
-
 app.use(
   session({
     secret: 'your-session-secret', // Replace this with a secure, unique secret
@@ -120,8 +96,6 @@ passport.use(
 );
 
 
-
-
 app.get('/api/users/:userId', verifyToken, async (req, res) => {
   const { userId } = req.params;
 
@@ -156,7 +130,7 @@ app.get('/api/auth/google/callback',
     // alert("Authentication successful.Redirecting! Please wait!")
     // Successful authentication, redirect home.
     // res.send("Authentication Successful");
-    res.redirect('https://healthmate-frontend.onrender.com');
+    res.redirect('http://localhost:3000');
 
   }
 );
@@ -203,6 +177,32 @@ app.get('/api/posts', async (req, res) => {
   }
 });
 
+app.get('/api/posts_admin', async (req, res) => {
+  try {
+    const searchQuery = req.query.search || '';
+    await mongoClient.connect();
+    const workouts_stagingCollection = mongoClient.db(dbName).collection('workouts_staging');
+    const query = searchQuery
+      ? {
+        $or: [
+          { type: { $regex: searchQuery, $options: 'i' } },
+          { title: { $regex: searchQuery, $options: 'i' } },
+          { description: { $regex: searchQuery, $options: 'i' } },
+          { name: { $regex: searchQuery, $options: 'i' } },
+        ],
+      }
+      : {};
+    const posts = await workouts_stagingCollection.find(query).toArray();
+    res.status(200).json(posts);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching posts.');
+  } finally {
+    await mongoClient.close();
+  }
+});
+
+
 
 app.post('/api/newpost', verifyToken, async (req, res) => {
 
@@ -212,7 +212,7 @@ app.post('/api/newpost', verifyToken, async (req, res) => {
     await mongoClient.connect();
     const userCollection = mongoClient.db(dbName).collection(userCollectionName);
     const user = await userCollection.findOne({ email: email });
-    const workoutsCollection = mongoClient.db(dbName).collection('workouts');
+    const workouts_stagingCollection = mongoClient.db(dbName).collection('workouts_staging');
 
     const newPost = {
       title,
@@ -223,7 +223,7 @@ app.post('/api/newpost', verifyToken, async (req, res) => {
       createdAt: new Date(),
     };
 
-    const result = await workoutsCollection.insertOne(newPost);
+    const result = await workouts_stagingCollection.insertOne(newPost);
     res.status(201).send('Post submitted successfully.');
   } catch (error) {
     console.error(error);
@@ -232,6 +232,81 @@ app.post('/api/newpost', verifyToken, async (req, res) => {
     await mongoClient.close();
   }
 });
+
+
+
+app.put('/api/posts_approve/:postId', verifyToken, async (req, res) => {
+
+  await mongoClient.connect();
+  const postId = req.params.postId;
+  try {
+  const workoutsStagingCollection = mongoClient.db(dbName).collection("workouts_staging");
+  const workoutsCollection = mongoClient.db(dbName).collection("workouts");
+
+
+  const post = await workoutsStagingCollection.findOne({ _id: new ObjectId(postId) });
+
+  const newId = new ObjectId();
+  const updatedPost = {
+    _id: newId,
+    title: post.title,
+    description: post.description,
+    type: post.type,
+    email: post.email,
+    name: post.name,
+    createdAt: new Date(),
+  };
+  
+  const result = await workoutsCollection.insertOne(updatedPost);
+  console.log("Result:",result);
+  if (result.acknowledged === true) {
+    await workoutsStagingCollection.deleteOne({ _id: new ObjectId(postId) });
+    res.status(200).send("Post approved and moved to workouts collection.");
+
+  } else {
+    console.log("Error")
+    res.status(500).send("Error moving the post to workouts collection.");
+  }
+
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).send("Error approving the post.");
+  } finally {
+    await mongoClient.close();
+  }
+
+});
+
+app.put('/api/posts_reject/:postId', verifyToken, async (req, res) => {
+
+  console.log("Inside posts_reject")
+  await mongoClient.connect();
+  const postId = req.params.postId;
+  try {
+  const workoutsStagingCollection = mongoClient.db(dbName).collection("workouts_staging");
+
+  const result = await workoutsStagingCollection.deleteOne({ _id: new ObjectId(postId) });
+
+  if (result.acknowledged === true) {
+    res.status(200).send("Post deleted!");
+
+  } else {
+    console.log("Error")
+    res.status(500).send("Error deleting the post.");
+  }
+
+  }
+  catch (error) {
+    console.error(error);
+    res.status(500).send("Error approving the post.");
+  } finally {
+    await mongoClient.close();
+  }
+
+});
+
+
 
 app.post('/api/reviews', async (req, res) => {
   const { postId, rating, review, user } = req.body;
@@ -337,32 +412,6 @@ app.post('/api/posts/:postId/reviews', verifyToken, async (req, res) => {
 
 
 
-app.get('/api/users/:userId/recommendations', verifyToken, async (req, res) => {
-  const userId = req.params.userId;
-
-  try {
-    await mongoClient.connect();
-    const userCollection = mongoClient.db(dbName).collection('users');
-    const workoutsCollection = mongoClient.db(dbName).collection('workouts');
-
-    const user = await userCollection.findOne({ _id: new ObjectId(userId) });
-    console.log("User in recommendations", user)
-    if (!user) {
-      res.status(404).send('User not found.');
-    } else {
-      const subscribedProfessionalEmail = user.subscribed.map(professional => professional.email);
-      console.log("subscribed professionals", subscribedProfessionalEmail)
-      const subscribedPosts = await workoutsCollection.find({ "email": { $in: subscribedProfessionalEmail } }).toArray();
-
-      res.status(200).json(subscribedPosts);
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error fetching subscribed posts.');
-  } finally {
-    await mongoClient.close();
-  }
-});
 
 
 
@@ -389,6 +438,30 @@ app.get('/api/posts/:postId', async (req, res) => {
   }
 });
 
+
+app.get('/api/posts_admin/:postId', async (req, res) => {
+  const { postId } = req.params;
+
+  try {
+    await mongoClient.connect();
+    const workouts_stagingCollection = mongoClient.db(dbName).collection('workouts_staging');
+    const post = await workouts_stagingCollection.findOne({ _id: new ObjectId(postId) });
+
+    if (post) {
+      res.status(200).json(post);
+    } else {
+      res.status(404).send('Post not found.');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error fetching post details.');
+  } finally {
+    await mongoClient.close();
+  }
+});
+
+
+
 app.get('/api/users/:userType/:userId', async (req, res) => {
   const { userType, userId } = req.params;
   const token = req.header('Authorization')?.split(' ')[1];
@@ -399,7 +472,11 @@ app.get('/api/users/:userType/:userId', async (req, res) => {
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log("userId print in usertype of server.js",userId,userType);
     req.user = decoded;
+    if (!ObjectId.isValid(userId)) {
+      return res.status(400).send('Invalid user ID in usertype.');
+    }
 
     await mongoClient.connect();
     const userCollection = mongoClient.db(dbName).collection(userCollectionName);
@@ -417,6 +494,146 @@ app.get('/api/users/:userType/:userId', async (req, res) => {
     await mongoClient.close();
   }
 });
+
+
+app.get('/api/fp_list', async (req, res) => {
+  try {
+    await mongoClient.connect();
+    const userCollection = mongoClient.db(dbName).collection(userCollectionName);
+    const fitnessProfessionals = await userCollection.find({ type: 'fitness-professional' }).toArray();
+    res.status(200).json(fitnessProfessionals);
+  } catch (error) {
+    console.error('Error fetching fitness professionals:', error);
+    res.status(500).send('Error fetching fitness professionals.');
+  } 
+});
+
+
+
+app.post('/api/subscribe/:professionalId', async (req, res) => {
+  const professionalId = req.params.professionalId;
+  const userId = req.body.userId;
+
+  if (!userId) {
+    return res.status(400).send('User ID is required.');
+  }
+
+  try {
+    await mongoClient.connect();
+    const userCollection = mongoClient.db(dbName).collection(userCollectionName);
+
+    const user = await userCollection.findOne({ _id: new ObjectId(userId) });
+    if (!user) {
+      return res.status(404).send('User not found.');
+    }
+
+    const professional = await userCollection.findOne({ _id: new ObjectId(professionalId) });
+    if (!professional) {
+      return res.status(404).send('Fitness professional not found.');
+    }
+
+    const subscriberData = {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+    };
+
+    const professionalData = {
+      _id: professional._id,
+      firstName: professional.firstName,
+      lastName: professional.lastName,
+      email: professional.email,
+    };
+
+    const updateProfessionalResult = await userCollection.updateOne(
+      { _id: new ObjectId(professionalId) },
+      { $addToSet: { subscribers: subscriberData } }
+    );
+
+    const updateUserResult = await userCollection.updateOne(
+      { _id: new ObjectId(userId) },
+      { $addToSet: { subscribed: professionalData } }
+    );
+
+    if (updateProfessionalResult.modifiedCount === 1 && updateUserResult.modifiedCount === 1) {
+      res.status(200).send('Successfully subscribed to the fitness professional.');
+    } else {
+      res.status(500).send('Error subscribing to the fitness professional.');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error subscribing to the fitness professional.');
+  } finally {
+    await mongoClient.close();
+  }
+});
+
+
+app.post('/api/unsubscribe/:professionalId', async (req, res) => {
+  const professionalId = req.params.professionalId;
+  const userId = req.body.userId;
+
+  if (!userId) {
+    return res.status(400).send('User ID is required.');
+  }
+
+  try {
+    await mongoClient.connect();
+    const userCollection = mongoClient.db(dbName).collection(userCollectionName);
+
+    const updateUserResult = await userCollection.updateOne(
+      { _id: new ObjectId(userId) },
+      { $pull: { subscribed: { _id: new ObjectId(professionalId) } } }
+    );
+
+    if (updateUserResult.modifiedCount === 1) {
+      res.status(200).send('Successfully unsubscribed from the fitness professional.');
+    } else {
+      res.status(500).send('Error unsubscribing from the fitness professional.');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Error unsubscribing from the fitness professional.');
+  } finally {
+    await mongoClient.close();
+  }
+});
+
+
+app.get('/api/users_rec/:userId/recommendations', verifyToken, async (req, res) => {
+  const userId = req.params.userId;
+  console.log("UserId in recommendations for server", userId);
+  // if (!ObjectId.isValid(userId)) {
+  //   console.error('Invalid user ID:', userId);
+  //   return res.status(400).send('Invalid user ID.');
+  // }
+  try {
+    await mongoClient.connect();
+    const userCollection = mongoClient.db(dbName).collection('users');
+    const workoutsCollection = mongoClient.db(dbName).collection('workouts');
+
+    const user = await userCollection.findOne({ _id: new ObjectId(userId) });
+    console.log("User in recommendations", user)
+    if (!user) {
+      res.status(404).send('User not found.');
+    } else {
+      const subscribedProfessionalEmail = user.subscribed.map(professional => professional.email);      
+      console.log("subscribed professionals", subscribedProfessionalEmail)
+      const subscribedPosts = await workoutsCollection.find({ "email": { $in: subscribedProfessionalEmail } }).toArray();
+
+      res.status(200).json(subscribedPosts);
+    }
+  } catch (error) {
+    console.error('Error fetching subscribed posts:', error.message);
+    res.status(500).send('Error fetching subscribed posts.');
+  } finally {
+    await mongoClient.close();
+  }
+});
+
+
+
 
 app.post('/api/chat', async (req, res) => {
   const { sender_email, receiver_email, message, time } = req.body;
@@ -441,7 +658,6 @@ app.post('/api/chat', async (req, res) => {
     await mongoClient.close();
   }
 });
-
 
 
 app.get('/api/chat/:senderEmail/:receiverEmail', async (req, res) => {
@@ -500,7 +716,6 @@ app.get('/api/professional/chat/users/:professionalEmail', async (req, res) => {
     await mongoClient.close();
   }
 });
-
 
 app.get('/api/professional/chat/:professionalEmail/:userEmail', async (req, res) => {
   const professionalEmail = req.params.professionalEmail;
@@ -567,222 +782,6 @@ app.post('/api/register', async (req, res) => {
     await mongoClient.close();
   }
 });
-
-app.get('/api/fp_list', async (req, res) => {
-  try {
-    await mongoClient.connect();
-    const userCollection = mongoClient.db(dbName).collection(userCollectionName);
-    const fitnessProfessionals = await userCollection.find({ type: 'fitness-professional' }).toArray();
-    res.status(200).json(fitnessProfessionals);
-  } catch (error) {
-    console.error('Error fetching fitness professionals:', error);
-    res.status(500).send('Error fetching fitness professionals.');
-  } 
-});
-
-
-// app.post('/api/subscribe/:professionalId', async (req, res) => {
-//   const professionalId = req.params.professionalId;
-//   const userId = req.body.userId;
-
-//   if (!userId) {
-//     return res.status(400).send('User ID is required.');
-//   }
-
-//   try {
-//     await mongoClient.connect();
-//     const userCollection = mongoClient.db(dbName).collection(userCollectionName);
-
-//     const user = await userCollection.findOne({ _id: new ObjectId(userId) });
-//     if (!user) {
-//       return res.status(404).send('User not found.');
-//     }
-
-//     const professional = await userCollection.findOne({ _id: new ObjectId(professionalId) });
-//     if (!professional) {
-//       return res.status(404).send('Fitness professional not found.');
-//     }
-
-//     const subscriberData = {
-//       _id: user._id,
-//       firstName: user.firstName,
-//       lastName: user.lastName,
-//       email: user.email,
-//     };
-
-//     const updateResult = await userCollection.updateOne(
-//       { _id: new ObjectId(professionalId) },
-//       { $addToSet: { subscribers: subscriberData } }
-//     );
-
-//     if (updateResult.modifiedCount === 1) {
-//       res.status(200).send('Successfully subscribed to the fitness professional.');
-//     } else {
-//       res.status(500).send('Error subscribing to the fitness professional.');
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send('Error subscribing to the fitness professional.');
-//   } finally {
-//     await mongoClient.close();
-//   }
-// });
-
-// app.post('/api/subscribe/:professionalId', async (req, res) => {
-//   const professionalId = req.params.professionalId;
-//   const userId = req.body.userId;
-
-//   if (!userId) {
-//     return res.status(400).send('User ID is required.');
-//   }
-
-//   try {
-//     await mongoClient.connect();
-//     const userCollection = mongoClient.db(dbName).collection(userCollectionName);
-
-//     const user = await userCollection.findOne({ _id: new ObjectId(userId) });
-//     if (!user) {
-//       return res.status(404).send('User not found.');
-//     }
-
-//     const professional = await userCollection.findOne({ _id: new ObjectId(professionalId) });
-//     if (!professional) {
-//       return res.status(404).send('Fitness professional not found.');
-//     }
-
-//     const subscriberData = {
-//       _id: user._id,
-//       firstName: user.firstName,
-//       lastName: user.lastName,
-//       email: user.email,
-//     };
-
-//     const professionalData = {
-//       _id: professional._id,
-//       firstName: professional.firstName,
-//       lastName: professional.lastName,
-//       email: professional.email,
-//     };
-
-//     const updateProfessionalResult = await userCollection.updateOne(
-//       { _id: new ObjectId(professionalId) },
-//       { $addToSet: { subscribers: subscriberData } }
-//     );
-
-//     const updateUserResult = await userCollection.updateOne(
-//       { _id: new ObjectId(userId) },
-//       { $addToSet: { subscribed: professionalData } }
-//     );
-
-//     if (updateProfessionalResult.modifiedCount === 1 && updateUserResult.modifiedCount === 1) {
-//       res.status(200).send('Successfully subscribed to the fitness professional.');
-//     } else {
-//       res.status(500).send('Error subscribing to the fitness professional.');
-//     }
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send('Error subscribing to the fitness professional.');
-//   } finally {
-//     await mongoClient.close();
-//   }
-// });
-
-app.post('/api/subscribe/:professionalId', async (req, res) => {
-  const professionalId = req.params.professionalId;
-  const userId = req.body.userId;
-
-  if (!userId) {
-    return res.status(400).send('User ID is required.');
-  }
-
-  try {
-    await mongoClient.connect();
-    const userCollection = mongoClient.db(dbName).collection(userCollectionName);
-
-    const user = await userCollection.findOne({ _id: new ObjectId(userId) });
-    if (!user) {
-      return res.status(404).send('User not found.');
-    }
-
-    const professional = await userCollection.findOne({ _id: new ObjectId(professionalId) });
-    if (!professional) {
-      return res.status(404).send('Fitness professional not found.');
-    }
-
-    const subscriberData = {
-      _id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-    };
-
-    const professionalData = {
-      _id: professional._id,
-      firstName: professional.firstName,
-      lastName: professional.lastName,
-      email: professional.email,
-    };
-
-    const updateProfessionalResult = await userCollection.updateOne(
-      { _id: new ObjectId(professionalId) },
-      { $addToSet: { subscribers: subscriberData } }
-    );
-
-    const updateUserResult = await userCollection.updateOne(
-      { _id: new ObjectId(userId) },
-      { $addToSet: { subscribed: professionalData } }
-    );
-
-    if (updateProfessionalResult.modifiedCount === 1 && updateUserResult.modifiedCount === 1) {
-      res.status(200).send('Successfully subscribed to the fitness professional.');
-    } else {
-      res.status(500).send('Error subscribing to the fitness professional.');
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error subscribing to the fitness professional.');
-  } finally {
-    await mongoClient.close();
-  }
-});
-
-
-
-app.post('/api/unsubscribe/:professionalId', async (req, res) => {
-  const professionalId = req.params.professionalId;
-  const userId = req.body.userId;
-
-  if (!userId) {
-    return res.status(400).send('User ID is required.');
-  }
-
-  try {
-    await mongoClient.connect();
-    const userCollection = mongoClient.db(dbName).collection(userCollectionName);
-
-    const updateUserResult = await userCollection.updateOne(
-      { _id: new ObjectId(userId) },
-      { $pull: { subscribed: { _id: new ObjectId(professionalId) } } }
-    );
-
-    if (updateUserResult.modifiedCount === 1) {
-      res.status(200).send('Successfully unsubscribed from the fitness professional.');
-    } else {
-      res.status(500).send('Error unsubscribing from the fitness professional.');
-    }
-  } catch (error) {
-    console.error(error);
-    res.status(500).send('Error unsubscribing from the fitness professional.');
-  } finally {
-    await mongoClient.close();
-  }
-});
-
-
-
-
-
-
 
 app.post('/api/updateProfile', async (req, res) => {
   const { email, firstName, lastName } = req.body;

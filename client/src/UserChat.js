@@ -15,7 +15,7 @@ const UserChat = ({ userEmail, professionalId, professionalEmail }) => {
     if (userEmail && professionalEmail) {
       try {
         const response = await axios.get(
-          `https://healthmate-backend.onrender.com/api/chat/${userEmail}/${professionalEmail}`,
+          `http://localhost:5001/api/chat/${userEmail}/${professionalEmail}`,
           {
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -38,7 +38,7 @@ const UserChat = ({ userEmail, professionalId, professionalEmail }) => {
     };
 
     try {
-      const response = await axios.post('https://healthmate-backend.onrender.com/api/chat', message, {
+      const response = await axios.post('http://localhost:5001/api/chat', message, {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`,
@@ -58,15 +58,19 @@ const UserChat = ({ userEmail, professionalId, professionalEmail }) => {
 
   return (
     <div className="chat">
-        <button className="refresh-button" onClick={fetchMessages}>
-            Refresh
-        </button>
+      <br></br>
+      <button className="refresh-button" onClick={fetchMessages}>
+        Refresh
+      </button>
       <div className="chat-messages">
         {messages.map((message, index) => (
           <div
             key={index}
             className={`chat-message ${message.sender_email === userEmail ? 'sent' : 'received'}`}
           >
+            <div className="sender-info">
+              <strong>{message.sender_email}</strong>
+            </div>
             <p>{message.message}</p>
             <span>{new Date(message.time).toLocaleTimeString()}</span>
           </div>

@@ -51,3 +51,11 @@
     background-color: #f1f1f1;
     border-radius: 10px;
   }
+
+  .move-up{
+    margin-top: -30em;
+  }
+
+  .move-down{
+    margin-top: 33em;
+  }

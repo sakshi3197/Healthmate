@@ -16,7 +16,7 @@
 
 //   const fetchUsers = async () => {
 //     try {
-//       const response = await axios.get(`https://healthmate-backend.onrender.com/api/professional/chat/users/${professionalId}`, {
+//       const response = await axios.get(`http://localhost:5001/api/professional/chat/users/${professionalId}`, {
 //         headers: {
 //           'Authorization': `Bearer ${token}`,
 //         },
@@ -82,7 +82,7 @@ const ProfessionalChat = () => {
 
   const fetchProfessionalEmail = async () => {
     try {
-      const response = await axios.get(`https://healthmate-backend.onrender.com/api/users/${professionalId}`, {
+      const response = await axios.get(`http://localhost:5001/api/users/${professionalId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -96,7 +96,7 @@ const ProfessionalChat = () => {
   const fetchUsers = async () => {
     if (professionalEmail) {
       try {
-        const response = await axios.get(`https://healthmate-backend.onrender.com/api/professional/chat/users/${professionalEmail}`, {
+        const response = await axios.get(`http://localhost:5001/api/professional/chat/users/${professionalEmail}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
@@ -115,6 +115,10 @@ const ProfessionalChat = () => {
     window.location.href = '/';
   };
 
+  const handle_Dashboard = () =>{
+    window.history.back();
+
+  }
 
   return (
     
@@ -123,32 +127,18 @@ const ProfessionalChat = () => {
       <div className="logo">Healthmate</div>
       <nav>
         <ul className="nav-list">
+        <li>
+              <button className="nav-button" onClick={handle_Dashboard}>
+                Go Back
+              </button>
+          </li>
           <li>
             <button className="nav-button" onClick={handleLogout}>
               Logout
             </button>
           </li>
-          <li>
-            <Link to="/ProfessionalChat">
-              <button className="nav-button">
-                Chats
-              </button>
-            </Link>
-          </li>
-          <li>
-            <Link to="/Posts">
-              <button className="nav-button">
-                Posts
-              </button>
-            </Link>
-          </li>
-          <li>
-            <Link to={{ pathname: "/newpost", state: { user: users, token: localStorage.getItem('token') } }}>
-              <button className="nav-button">
-                New Post
-              </button>
-            </Link>
-          </li>
+          
+          
           <li>
             <Link to="/Profile">
               <button className="nav-button">

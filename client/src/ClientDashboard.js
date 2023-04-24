@@ -14,7 +14,7 @@
 //     const userId = localStorage.getItem('id');
 //     const token = localStorage.getItem('token');
 
-//     fetch(`https://healthmate-backend.onrender.com/api/users/${userType}/${userId}`, {
+//     fetch(`http://localhost:5001/api/users/${userType}/${userId}`, {
 //       headers: {
 //         'Authorization': `Bearer ${token}`,
 //       },
@@ -117,7 +117,7 @@
 
 //     const fetchUserDetails = async () => {
 //       try {
-//         const response = await fetch(`https://healthmate-backend.onrender.com/api/users/${userType}/${userId}`, {
+//         const response = await fetch(`http://localhost:5001/api/users/${userType}/${userId}`, {
 //           headers: {
 //             'Authorization': `Bearer ${token}`,
 //           },
@@ -130,7 +130,7 @@
 //         const userData = await response.json();
 //         setUser(userData);
     
-//         const recommendationsResponse = await fetch(`https://healthmate-backend.onrender.com/api/users/${userId}/recommendations`, {
+//         const recommendationsResponse = await fetch(`http://localhost:5001/api/users/${userId}/recommendations`, {
 //           headers: {
 //             'Authorization': `Bearer ${token}`,
 //           },
@@ -150,7 +150,7 @@
 
 //     // const fetchUserDetails = async () => {
 //     //   try {
-//     //     const response = await fetch(`https://healthmate-backend.onrender.com/api/users/${userType}/${userId}`, {
+//     //     const response = await fetch(`http://localhost:5001/api/users/${userType}/${userId}`, {
 //     //       headers: {
 //     //         'Authorization': `Bearer ${token}`,
 //     //       },
@@ -163,7 +163,7 @@
 //     //     const userData = await response.json();
 //     //     setUser(userData);
 
-//     //     const postsResponse = await fetch('https://healthmate-backend.onrender.com/api/posts', {
+//     //     const postsResponse = await fetch('http://localhost:5001/api/posts', {
 //     //       headers: {
 //     //         'Authorization': `Bearer ${token}`,
 //     //       },
@@ -273,53 +273,66 @@
 // export default ClientDashboard;
 
 
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from "react-router-dom";
+import axios from 'axios';
 import './Clientdashboard.css';
 
 const ClientDashboard = () => {
   const [user, setUser] = useState(null);
   const [recommendations, setRecommendations] = useState([]);
+  const [recommendationsError, setRecommendationsError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
     const userType = localStorage.getItem('type');
     const userId = localStorage.getItem('id');
     const token = localStorage.getItem('token');
+    console.log("User ID:", userId); 
 
     const fetchUserDetailsAndRecommendations = async () => {
       try {
         console.log("user Id for recommendations", userId);
-        const response = await fetch(`https://healthmate-backend.onrender.com/api/users/${userType}/${userId}`, {
+        const response = await axios.get(`http://localhost:5001/api/users/${userType}/${userId}`, {
           headers: {
             'Authorization': `Bearer ${token}`,
           },
         });
 
-        if (!response.ok) {
+        if (response.status !== 200) {
           throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
         }
 
-        const userData = await response.json();
+        const userData = response.data;
         setUser(userData);
         console.log("User data", userData);
-        const recommendationsResponse = await fetch(`https://healthmate-backend.onrender.com/api/users/${userId}/recommendations`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-          },
-        });
-        console.log("Recommendations",recommendationsResponse);
-        if (!recommendationsResponse.ok) {
-          throw new Error(`HTTP error ${recommendationsResponse.status}: ${recommendationsResponse.statusText}`);
+
+        try {
+          console.log("userId in recommendations in client side", userId);
+          const recommendationsResponse = await axios.get(`http://localhost:5001/api/users_rec/${userId}/recommendations`, {
+      
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          });
+
+          console.log("Recommendations", recommendationsResponse);
+          if (recommendationsResponse.status !== 200) {
+            throw new Error(`HTTP error ${recommendationsResponse.status}: ${await recommendationsResponse.text()}`);
+          }
+
+          const recommendationsData = recommendationsResponse.data;
+          setRecommendations(recommendationsData);
+        } catch (error) {
+          console.error('Error fetching recommendations:', error.message, error.response);
+          setRecommendationsError(error.message);
         }
 
-        const recommendationsData = await recommendationsResponse.json();
-        setRecommendations(recommendationsData);
       } catch (error) {
-        console.error('Error fetching user details and recommendations:', error.message);
+        console.error('Error fetching user details:', error.message);
       }
     };
+
     fetchUserDetailsAndRecommendations();
   }, []);
 
@@ -346,7 +359,7 @@ const ClientDashboard = () => {
                     <li>
                       <Link to="/Chat_list">
                         <button className="nav-button">
-                          Chats
+                          Chat
                         </button>
                       </Link>
                     </li>
@@ -375,7 +388,6 @@ const ClientDashboard = () => {
                 </nav>
               </header>
               <div className="client-dashboard-content">
-                <h1>This is the client dashboard page</h1>
                 <h1>Welcome, {user.firstName} {user.lastName}!</h1>
                 {/* <p>Email: {user.email}</p> */}
                 {/* <p>User Type: {user.type}</p> */}

@@ -257,3 +257,17 @@ body {
   color: #000;
 }
 
+
+
+.readable-content {
+  margin: 2rem;
+  padding: 1rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+}
+
+in-center{
+  margin-top: 5em;
+  margin-left: 5em;
+  justify-content: "center";
+}

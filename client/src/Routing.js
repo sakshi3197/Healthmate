@@ -22,6 +22,8 @@ import Chat from './Chat';
 import ProfessionalChat from './ProfessionalChat';
 import ProfessionalUserChat from './ProfessionalUserChat';
 import UserChat from './UserChat';
+import AdminDashboard from './AdminDashboard';
+import Contact from "./Contact";
 
 
 function Routing() {
@@ -35,6 +37,7 @@ function Routing() {
           <Route path="/Register" element={<Register />}/>
           <Route path="/ClientDashboard" element={<ClientDashboard />} />
           <Route path="/FPDashboard" element={<FPDashboard />} />
+          <Route path="/AdminDashboard" element={<AdminDashboard />} />
           <Route path="/NewPost" element={<NewPost />} />
           <Route path="/Posts" element={<Posts />} />
           <Route path="/post/:id" element={<PostDetails />} />
@@ -49,6 +52,8 @@ function Routing() {
           <Route path="/ProfessionalChat" element={<ProfessionalChat />} /> 
           <Route path="/ProfessionalUserChat" element={<ProfessionalUserChat />} />
           <Route path="/UserChat" element={<UserChat />} />
+          <Route path="/Contact" element={<Contact />} />
+
 
         </Routes>
       </BrowserRouter>

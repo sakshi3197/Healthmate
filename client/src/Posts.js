@@ -8,7 +8,7 @@
 //     const [searchQuery, setSearchQuery] = useState('');
 //     const fetchPosts = async (query = '') => {
 //         try {
-//           const response = await fetch(`https://healthmate-backend.onrender.com/api/posts${query}`,{
+//           const response = await fetch(`http://localhost:5001/api/posts${query}`,{
 //             headers: {
 //               'Authorization': `Bearer ${token}`,
 //             },
@@ -73,21 +73,35 @@
 // export default Posts;
 import React, { useState, useEffect } from 'react';
 import './Posts.css';
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Posts = () => {
+  const navigate = useNavigate();
+
+
   const [posts, setPosts] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [token, setToken] = useState('');
+
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     setToken(token);
   }, []);
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login');
+  };
+
+  const handle_Dashboard = () =>{
+    window.history.back();
+
+  }
+
   const fetchPosts = async (query = '') => {
     try {
-      const response = await fetch(`https://healthmate-backend.onrender.com/api/posts/${query}`,{
+      const response = await fetch(`http://localhost:5001/api/posts/${query}`,{
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -114,6 +128,30 @@ const Posts = () => {
 
   return (
     <div>
+      <header className="header">
+      <div className="logo">Healthmate</div>
+      <nav>
+        <ul className="nav-list">
+          <li>
+              <button className="nav-button" onClick={handle_Dashboard}>
+                Go Back
+              </button>
+          </li>
+          <li>
+            <Link to="/Posts">
+              <button className="nav-button">
+                Profile
+              </button>
+            </Link>
+          </li>
+          <li>
+              <button className="nav-button" onClick={handleLogout}>
+                Logout
+              </button>
+          </li>
+        </ul>
+      </nav>
+    </header>
       <header className="navbar">
         <h1>Posts</h1>
         <div className="searchBox">

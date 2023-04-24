@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate, Link } from "react-router-dom";
+
 import './fpList.css';
 import axios from 'axios';
+import "./Profile.css";
 
 const FpList = () => {
   const [professionals, setProfessionals] = useState([]);
@@ -9,11 +12,13 @@ const FpList = () => {
   const userId = localStorage.getItem('id');
   const token = localStorage.getItem('token');
 
+  const navigate = useNavigate();
+
   const fetchData = async () => {
     setIsLoading(true);
     const source = axios.CancelToken.source();
     try {
-      const userResponse = await axios.get(`https://healthmate-backend.onrender.com/api/users/${userId}`, {
+      const userResponse = await axios.get(`http://localhost:5001/api/users/${userId}`, {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
@@ -21,7 +26,7 @@ const FpList = () => {
       });
       setUser(userResponse.data);
 
-      const fpListResponse = await axios.get('https://healthmate-backend.onrender.com/api/fp_list', {
+      const fpListResponse = await axios.get('http://localhost:5001/api/fp_list', {
         cancelToken: source.token,
       });
       setProfessionals(fpListResponse.data);
@@ -36,6 +41,11 @@ const FpList = () => {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login');
+  };
+
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -44,8 +54,7 @@ const FpList = () => {
   const subscribeToProfessional = async (professionalId) => {
     setIsLoading(true);
     try {
-      const response = await axios.post(
-        `https://healthmate-backend.onrender.com/api/subscribe/${professionalId}`,
+      const response = await axios.post(`http://localhost:5001/api/subscribe/${professionalId}`,
         { userId },
         {
           headers: {
@@ -58,7 +67,9 @@ const FpList = () => {
       if (response.status === 200) {
         console.log('Successfully subscribed to professional');
         try {
-          await fetchData(); // Fetch the updated user data after subscribing
+          await fetchData();
+          window.location.reload();
+          // Fetch the updated user data after subscribing
         } catch (error) {
           console.error('Error fetching updated data:', error);
         }
@@ -83,7 +94,7 @@ const FpList = () => {
     setIsLoading(true);
     try {
       const response = await axios.post(
-        `https://healthmate-backend.onrender.com/api/unsubscribe/${professionalId}`,
+        `http://localhost:5001/api/unsubscribe/${professionalId}`,
         { userId },
         {
           headers: {
@@ -97,6 +108,8 @@ const FpList = () => {
         console.log('Successfully unsubscribed from professional');
         try {
           await fetchData(); // Fetch the updated user data after unsubscribing
+          window.location.reload();
+
         } catch (error) {
           console.error('Error fetching updated data:', error);
         }
@@ -110,47 +123,98 @@ const FpList = () => {
     }
   };
 
+
   const isSubscribed = (professionalId) => {
     if (!user) return false;
     return user.subscribed.some((professional) => professional._id === professionalId);
   };
 
-  return (
-    <div className="fitness-professionals">
-      <h1>Fitness Professionals</h1>
-      {isLoading && <p>Loading...</p>}
-      <ul>
-        {professionals.map((professional, index) => (
-          <li key={index}>
-            {professional.firstName} {professional.lastName} - {professional.email}
-            {isSubscribed(professional._id) ? (
-              <>
-                <button className="subscribed-button" disabled>
-                  Subscribed
-                </button>
-                <button
-                  className="unsubscribe-button"
-                  onClick={() => unsubscribeFromProfessional(professional._id)}
-                  disabled={isLoading}
-                >
-                  Unsubscribe
-                </button>
-              </>
-            ) : (
+  const handle_Dashboard = () =>{
+    window.history.back();
+  }
+
+
+  return (<div>
+    <header className="header">
+            <div className="logo">Healthmate</div>
+            <nav>
+              <ul className="nav-list">
+              <li>
+                    <button className="nav-button" onClick={handle_Dashboard}>
+                      Go Back
+                    </button>
+                </li>
+
+                <li>
+                  <button className="nav-button" onClick={handleLogout}>
+                    Logout
+                  </button>
+                </li>
+                <li>
+                  <Link to="/ClientDashboard">
+                    <button className="nav-button" >
+                      Dashboard
+                    </button>
+                  </Link>
+                </li>
+
+              </ul>
+            </nav>
+          </header>
+          <br></br>
+          <br></br>
+          <br></br>
+          <div className="fitness-professionals">
+  <h1>Fitness Professionals</h1>
+  {isLoading && <p>Loading...</p>}
+  <table className="professionals-table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Email</th>
+      <th>Subscribe</th>
+    </tr>
+  </thead>
+  <tbody>
+    {professionals.map((professional, index) => (
+      <tr key={index}>
+        <td>
+          {professional.firstName} {professional.lastName}
+        </td>
+        <td>{professional.email}</td>
+        <td>
+          {isSubscribed(professional._id) ? (
+            <>
+              <button className="subscribed-button" disabled>
+                Subscribed
+              </button>
               <button
-                className="subscribe-button"
-                onClick={() => subscribeToProfessional(professional._id)}
+                className="unsubscribe-button"
+                onClick={() => unsubscribeFromProfessional(professional._id)}
                 disabled={isLoading}
               >
-                Subscribe
+                Unsubscribe
               </button>
-            )}
-          </li>
-        ))}
-      </ul>
-      {user && user.subscribed.length === 0 && (
-        <p>Please subscribe to give recommendations</p>
-      )}
+            </>
+          ) : (
+            <button
+              className="subscribe-button"
+              onClick={() => subscribeToProfessional(professional._id)}
+              disabled={isLoading}
+            >
+              Subscribe
+            </button>
+          )}
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</table>
+  {user && user.subscribed.length === 0 && (
+    <p>Please subscribe to give recommendations</p>
+  )}
+</div>
+
     </div>
   );
 };
