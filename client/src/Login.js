@@ -17,9 +17,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      //const response = await axios.post('http://localhost:5001/api/login', formData);
-      const response = await axios.post('https://healthmate-backend.onrender.com/api/login', formData);
-
+      const response = await axios.post('http://localhost:5001/api/login', formData);
       console.log(response.data);
       localStorage.clear();
       localStorage.setItem('token', response.data.token);
@@ -63,7 +61,7 @@ const Login = () => {
     </div>
 
         <form onSubmit={handleSubmit} className="login-form">
-          <h1 className="h1_title">Login</h1>
+          <h1 className="h1_title margin_bottom">Login</h1>
           <label>Email:</label>
           <input
             type="email"
@@ -79,12 +77,14 @@ const Login = () => {
             value={formData.password}
             onChange={handleChange}
           />
-      
-          <button type="submit">Login</button>
+          <div className='Login_Buttons'>
+          <button type="submit">Login</button>  <Link to="/ForgotPassword">Forgot Password?</Link>
+
           <br></br>
           <Link to="/Register">
           <button>Not a User? Register!</button>
           </Link>
+          </div>
         </form>
     </div>
       );

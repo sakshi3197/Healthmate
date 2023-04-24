@@ -10,8 +10,7 @@ export const AuthProvider = ({ children }) => {
     const token = localStorage.getItem('token');
     if (token) {
       axios
-        //.get('http://localhost:5001/user', {
-        .get('https://healthmate-backend.onrender.com/user', {
+        .get('http://localhost:5001/user', {
           headers: { Authorization: `Bearer ${token}` },
         })
         .then((res) => {

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from "react-router-dom";
+import './FPdashboard.css'
 
 const FPDashboard = () => {
   const [user, setUser] = useState(null);
@@ -11,7 +12,7 @@ const FPDashboard = () => {
     const userId = localStorage.getItem('id');
     const token = localStorage.getItem('token');
 
-    fetch(`https://healthmate-backend.onrender.com/api/users/${userType}/${userId}`, {
+    fetch(`http://localhost:5001/api/users/${userType}/${userId}`, {
       headers: {
         'Authorization': `Bearer ${token}`,
       },
@@ -36,7 +37,7 @@ const FPDashboard = () => {
   };
 
   return (
-    <div>
+    <div className="fp-dashboard">
       {user && (
         
         <div>
@@ -48,6 +49,13 @@ const FPDashboard = () => {
               <button className="nav-button" onClick={handleLogout}>
                 Logout
               </button>
+          </li>
+          <li>
+            <Link to="/ProfessionalChat">
+              <button className="nav-button" >
+                Chats
+              </button>
+              </Link>
           </li>
           <li>
             <Link to="/Posts">
@@ -77,11 +85,11 @@ const FPDashboard = () => {
       <br></br>
       <br></br>
       <br></br>
-      <div>
+      <div className="fp-dashboard-content">
             <h1>This is fitness professional dashboard page</h1>
           <h1>Welcome, {user.firstName} {user.lastName}!</h1>
-          <p>Email: {user.email}</p>
-          <p>User Type: {user.type}</p>
+          {/* <p>Email: {user.email}</p>
+          <p>User Type: {user.type}</p> */}
         </div>
 
         </div>

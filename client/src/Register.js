@@ -15,7 +15,7 @@ function Register() {
     cpassword: '',
     type: '',
   });
-  
+
   const [formErrors, setFormErrors] = useState({
     email: '',
     password: '',
@@ -32,28 +32,27 @@ function Register() {
     setFormErrors({
       email: name === 'email' && !value.match(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i) ? 'Invalid email format' : '',
       password: name === 'password' && value.length < 8 ? 'Password must be at least 8 characters long' : '',
+      cpassword: name === 'cpassword' && value !== formValues.password ? 'Passwords do not match' : '',
       type: name === 'type' && value === '' ? 'Please select a user type' : '',
     });
   };
-      const navigate = useNavigate();
-      const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-         // await axios.post('http://localhost:5001/api/register', formValues);
-          await axios.post('https://healthmate-backend.onrender.com/api/register', formValues);
+  const navigate = useNavigate();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post('http://localhost:5001/api/register', formValues);
+      alert('User registered successfully.');
+      navigate('/Login'); // Navigate to the homepage after successful registration
+    } catch (error) {
+      console.error(error);
+      if (error.response && error.response.status === 400 && error.response.data === 'User already exists.') {
+        alert('User with this email already exists. Please use a different email address.');
+      } else {
+        alert('Error registering the user.');
+      }
 
-          alert('User registered successfully.');
-          navigate('/Login'); // Navigate to the homepage after successful registration
-        }catch (error) {
-            console.error(error);
-            if (error.response && error.response.status === 400 && error.response.data === 'User already exists.') {
-              alert('User with this email already exists. Please use a different email address.');
-            } else {
-              alert('Error registering the user.');
-            }
-          
-        }
-      };
+    }
+  };
 
   return (
     <div className="register-background">
@@ -61,13 +60,13 @@ function Register() {
         <header className="header">
           <Link to="/">
             <div className="logo">Healthmate</div>
-          </Link> 
+          </Link>
         </header>
       </div>
-        
+
       <form className="register-form" onSubmit={handleSubmit}>
-      <h1 className="h1_title">Register</h1>
-      <br></br>
+        <h1 className="h1_title">Register</h1>
+        <br></br>
         <label htmlFor="fname">First Name</label>
         <input className="reg_input"
           value={formValues.firstName}
@@ -112,6 +111,7 @@ function Register() {
           name="password"
           required
         />
+        {formErrors.password && <p>{formErrors.password}</p>}
 
         <label htmlFor="cpassword">Confirm Password</label>
         <input className="reg_input"
@@ -124,7 +124,7 @@ function Register() {
           required
         />
 
-        {formErrors.password && <p>{formErrors.password}</p>}
+        {formErrors.cpassword && <p>{formErrors.cpassword}</p>}
 
         <label htmlFor="type">User Type</label>
         <select
@@ -144,17 +144,15 @@ function Register() {
         <button type="submit">Register</button>
         <br></br>
         <Link to="/Login">
-        <button >Already a User? Login!</button>
+          <button >Already a User? Login!</button>
         </Link>
         <br></br>
         ------------------OR------------------
         <br></br>
-        {/* <a href="http://localhost:5001/api/auth/google" >Sign in with Google</a> */}
-        <a href="https://healthmate-backend.onrender.com/api/auth/google" >Sign in with Google</a>
-
+        <a href="http://localhost:5001/api/auth/google" >Sign in with Google</a>
 
       </form>
-      
+
 
     </div>
   );

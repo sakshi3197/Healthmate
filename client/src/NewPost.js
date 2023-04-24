@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import {  useNavigate, Link } from 'react-router-dom';
+import './NewPost.css';
 
 const NewPost = ({ location }) => {
     const navigate = useNavigate();
@@ -14,7 +15,7 @@ const NewPost = ({ location }) => {
     const userId = localStorage.getItem('id');
     const token = localStorage.getItem('token');
     setToken(token)
-    fetch(`https://healthmate-backend.onrender.com/api/users/${userType}/${userId}`, {
+    fetch(`http://localhost:5001/api/users/${userType}/${userId}`, {
         headers: {
        
         'Authorization': `Bearer ${token}`,
@@ -38,9 +39,7 @@ const NewPost = ({ location }) => {
     e.preventDefault();
   
     try {
-      //const response = await fetch('http://localhost:5001/api/newpost', {
-      const response = await fetch('https://healthmate-backend.onrender.com/api/newpost', {
-
+      const response = await fetch('http://localhost:5001/api/newpost', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -68,12 +67,17 @@ const NewPost = ({ location }) => {
   };
 
   return (
-    <div>
+    <div className="newpost-background">
+      <div className="app">
+        <header className="header">
+        <Link to="/">
+            <div className="logo">Healthmate</div>
+          </Link> 
+        </header>
+      </div>
 
-    {user && (
-      <>  
-      <h1>New Post</h1>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="login-form">
+        <h1 className="h1_title">New Post</h1>
         <div>
           <label>Title:</label>
           <input
@@ -100,8 +104,6 @@ const NewPost = ({ location }) => {
         </div>
         <button type="submit">Submit</button>
       </form>
-      </>
-    )}
     </div>
   );
 };

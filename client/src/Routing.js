@@ -1,15 +1,28 @@
 import React from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import { ToastContainer } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+
+
 import App from "./App"
 
 import Register from './Register';
 import Login from './Login';
-import ClientDashboard from "./ClientDashboard"
+import ClientDashboard from "./ClientDashboard";
 import FPDashboard from './FPDashboard';
-import NewPost from './NewPost'
-import Posts from './Posts'
+import NewPost from './NewPost';
+import Posts from './Posts';
+import PostDetails from './PostDetails';
+import PostReviews from './PostReviews';
+import ForgotPassword from './ForgotPassword';
+import Profile from './Profile';
+import VerifyOTP from './VerifyOTP';
+import ResetPassword from './ResetPassword';
+import FpList from './FpList';
+import Chat_list from './Chat_list';
+import Chat from './Chat';
+import ProfessionalChat from './ProfessionalChat';
+import ProfessionalUserChat from './ProfessionalUserChat';
+import UserChat from './UserChat';
+
 
 function Routing() {
   return (
@@ -24,6 +37,19 @@ function Routing() {
           <Route path="/FPDashboard" element={<FPDashboard />} />
           <Route path="/NewPost" element={<NewPost />} />
           <Route path="/Posts" element={<Posts />} />
+          <Route path="/post/:id" element={<PostDetails />} />
+          <Route path="/PostReviews" element={<PostReviews />} />
+          <Route path="/Profile" element={<Profile />} />
+          <Route path="/ForgotPassword" element={<ForgotPassword />} />
+          <Route path="/VerifyOTP" element={<VerifyOTP />} />
+          <Route path="/ResetPassword" element={<ResetPassword />} />
+          <Route path="/FpList" element={<FpList />} />  
+          <Route path="/Chat_list" element={<Chat_list />} />  
+          <Route path="/Chat" element={<Chat />} /> 
+          <Route path="/ProfessionalChat" element={<ProfessionalChat />} /> 
+          <Route path="/ProfessionalUserChat" element={<ProfessionalUserChat />} />
+          <Route path="/UserChat" element={<UserChat />} />
+
         </Routes>
       </BrowserRouter>
     

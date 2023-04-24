@@ -71,3 +71,28 @@
 .h1_title{
     text-align: center;
 }
+
+
+
+.login-form select,
+.login-form textarea {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  font-size: 1rem;
+}
+
+/* Add a minimum height and vertical resizing for the textarea */
+.login-form textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+.margin_bottom {
+  margin-bottom: 1em;
+}
+
+.in_center{
+  justify-content: center;
+}
