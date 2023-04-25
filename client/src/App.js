@@ -11,7 +11,9 @@ function HomePage() {
   const contactRef = useRef(null);
 
   const handleNavigation = (ref) => {
-    ref.current.scrollIntoView({ behavior: "smooth" });
+    if (ref && ref.current) {
+      ref.current.scrollIntoView({ behavior: "smooth" });
+    }
   };
 
   return (
@@ -32,14 +34,14 @@ function HomePage() {
             </li>
             <li>
               <Link to="/Login">
-                <button className="nav-button" onClick={() => handleNavigation(projectsRef)}>
+                <button className="nav-button">
                   Login
                 </button>
               </Link>
             </li>
             <li>
               <Link to="/Register">
-                <button className="nav-button" onClick={() => handleNavigation(contactRef)}>
+                <button className="nav-button">
                   Register
                 </button>
               </Link>
